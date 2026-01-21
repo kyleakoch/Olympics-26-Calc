@@ -153,6 +153,8 @@ const medalData = {
   2026: {}
 };
 
+const STORAGE_KEY = "olympicsFantasyRosters";
+
 const sportsGrid = document.getElementById("sports-grid");
 const totalPointsEl = document.getElementById("total-points");
 const totalGoldsEl = document.getElementById("total-golds");
@@ -160,13 +162,56 @@ const sportsCompleteEl = document.getElementById("sports-complete");
 const resultsBody = document.getElementById("results-body");
 const resultsHelper = document.getElementById("results-helper");
 const yearButtons = document.querySelectorAll(".year-button");
+const rosterNameInput = document.getElementById("roster-name");
+const rosterSelect = document.getElementById("roster-select");
+const rosterStatus = document.getElementById("roster-status");
+const leaderboardBody = document.getElementById("leaderboard-body");
 
 let selectedYear = 2022;
+let currentRosterId = null;
 const selections = new Map();
 
 const yearLabels = {
   2022: "2022 results are loaded.",
   2026: "2026 is a preview. Points will populate as results are finalized."
+};
+
+const calculatePoints = (medals) => medals.gold * 3 + medals.silver * 2 + medals.bronze;
+
+const getMedals = (sport, country) => {
+  if (!sport || !country) return { gold: 0, silver: 0, bronze: 0 };
+  const yearData = medalData[selectedYear] || {};
+  const sportData = yearData[sport] || {};
+  return sportData[country] || { gold: 0, silver: 0, bronze: 0 };
+};
+
+const getTopPerformers = (sport) => {
+  const yearData = medalData[selectedYear] || {};
+  const sportData = yearData[sport] || {};
+  const entries = Object.entries(sportData).map(([country, medals]) => ({
+    country,
+    points: calculatePoints(medals)
+  }));
+  return entries.sort((a, b) => b.points - a.points).slice(0, 3);
+};
+
+const getStoredRosters = () => {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+};
+
+const saveStoredRosters = (rosters) => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(rosters));
+};
+
+const setRosterStatus = (message) => {
+  rosterStatus.textContent = message;
 };
 
 const initializeSports = () => {
@@ -196,13 +241,16 @@ const initializeSports = () => {
     meta.className = "sport-meta";
     meta.innerHTML = "<span>Points</span><span class=\"points\">0</span>";
 
+    const hint = document.createElement("p");
+    hint.className = "sport-hint";
+
     select.addEventListener("change", (event) => {
       selections.set(sport, event.target.value);
       enforceUniqueSelections();
       updateScores();
     });
 
-    card.append(title, select, meta);
+    card.append(title, select, meta, hint);
     sportsGrid.appendChild(card);
   });
 };
@@ -222,14 +270,23 @@ const enforceUniqueSelections = () => {
   });
 };
 
-const getMedals = (sport, country) => {
-  if (!sport || !country) return { gold: 0, silver: 0, bronze: 0 };
-  const yearData = medalData[selectedYear] || {};
-  const sportData = yearData[sport] || {};
-  return sportData[country] || { gold: 0, silver: 0, bronze: 0 };
-};
+const updateSportHints = () => {
+  const cards = sportsGrid.querySelectorAll(".sport-card");
+  cards.forEach((card) => {
+    const sport = card.querySelector("select").getAttribute("data-sport");
+    const hint = card.querySelector(".sport-hint");
+    const topPerformers = getTopPerformers(sport);
 
-const calculatePoints = (medals) => medals.gold * 3 + medals.silver * 2 + medals.bronze;
+    if (!topPerformers.length) {
+      hint.textContent = "No results yet for this sport.";
+      return;
+    }
+
+    hint.textContent = `Top medals: ${topPerformers
+      .map((entry) => `${entry.country} (${entry.points} pts)`) 
+      .join(", ")}`;
+  });
+};
 
 const updateScores = () => {
   let totalPoints = 0;
@@ -272,6 +329,8 @@ const updateScores = () => {
   totalPointsEl.textContent = totalPoints;
   totalGoldsEl.textContent = totalGolds;
   sportsCompleteEl.textContent = `${completed} / ${sports.length}`;
+
+  updateLeaderboard();
 };
 
 const setYear = (year) => {
@@ -281,6 +340,149 @@ const setYear = (year) => {
   });
   resultsHelper.textContent = yearLabels[year] || "";
   updateScores();
+  updateSportHints();
+};
+
+const resetSelections = () => {
+  selections.clear();
+  const selects = sportsGrid.querySelectorAll("select");
+  selects.forEach((select) => {
+    select.value = "";
+  });
+  enforceUniqueSelections();
+  updateScores();
+};
+
+const loadRoster = (roster) => {
+  resetSelections();
+  if (!roster) return;
+
+  Object.entries(roster.selections || {}).forEach(([sport, country]) => {
+    selections.set(sport, country);
+  });
+
+  const selects = sportsGrid.querySelectorAll("select");
+  selects.forEach((select) => {
+    const sport = select.getAttribute("data-sport");
+    select.value = selections.get(sport) || "";
+  });
+
+  enforceUniqueSelections();
+  updateScores();
+};
+
+const refreshRosterSelect = () => {
+  const rosters = getStoredRosters();
+  rosterSelect.innerHTML = "";
+
+  const placeholder = document.createElement("option");
+  placeholder.value = "";
+  placeholder.textContent = "Select saved roster";
+  rosterSelect.appendChild(placeholder);
+
+  rosters.forEach((roster) => {
+    const option = document.createElement("option");
+    option.value = roster.id;
+    option.textContent = roster.name;
+    rosterSelect.appendChild(option);
+  });
+};
+
+const saveRoster = () => {
+  const name = rosterNameInput.value.trim();
+  if (!name) {
+    setRosterStatus("Add a roster name before saving.");
+    return;
+  }
+
+  const rosters = getStoredRosters();
+  const existingIndex = rosters.findIndex((roster) => roster.name.toLowerCase() === name.toLowerCase());
+  const rosterData = {
+    id: existingIndex >= 0 ? rosters[existingIndex].id : crypto.randomUUID(),
+    name,
+    selections: Object.fromEntries(selections.entries())
+  };
+
+  if (existingIndex >= 0) {
+    rosters[existingIndex] = rosterData;
+  } else {
+    rosters.push(rosterData);
+  }
+
+  saveStoredRosters(rosters);
+  currentRosterId = rosterData.id;
+  rosterSelect.value = rosterData.id;
+  setRosterStatus(existingIndex >= 0 ? "Roster updated." : "Roster saved.");
+  refreshRosterSelect();
+  updateLeaderboard();
+};
+
+const deleteRoster = () => {
+  if (!currentRosterId) {
+    setRosterStatus("Select a roster to delete.");
+    return;
+  }
+
+  const rosters = getStoredRosters().filter((roster) => roster.id !== currentRosterId);
+  saveStoredRosters(rosters);
+  currentRosterId = null;
+  rosterSelect.value = "";
+  rosterNameInput.value = "";
+  setRosterStatus("Roster deleted.");
+  refreshRosterSelect();
+  updateLeaderboard();
+};
+
+const newRoster = () => {
+  currentRosterId = null;
+  rosterSelect.value = "";
+  rosterNameInput.value = "";
+  resetSelections();
+  setRosterStatus("Started a new roster.");
+};
+
+const updateLeaderboard = () => {
+  const rosters = getStoredRosters();
+  leaderboardBody.innerHTML = "";
+
+  rosters.forEach((roster) => {
+    let totalPoints = 0;
+    let totalGolds = 0;
+    let completed = 0;
+
+    sports.forEach((sport) => {
+      const country = roster.selections?.[sport] || "";
+      if (country) completed += 1;
+      const medals = getMedals(sport, country);
+      totalPoints += calculatePoints(medals);
+      totalGolds += medals.gold;
+    });
+
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${roster.name}</td>
+      <td>${completed} / ${sports.length}</td>
+      <td>${totalGolds}</td>
+      <td>${totalPoints}</td>
+    `;
+    leaderboardBody.appendChild(row);
+  });
+};
+
+const connectRosterActions = () => {
+  document.getElementById("save-roster").addEventListener("click", saveRoster);
+  document.getElementById("delete-roster").addEventListener("click", deleteRoster);
+  document.getElementById("new-roster").addEventListener("click", newRoster);
+
+  rosterSelect.addEventListener("change", (event) => {
+    const rosters = getStoredRosters();
+    const selected = rosters.find((roster) => roster.id === event.target.value);
+    if (!selected) return;
+    currentRosterId = selected.id;
+    rosterNameInput.value = selected.name;
+    setRosterStatus("Roster loaded.");
+    loadRoster(selected);
+  });
 };
 
 yearButtons.forEach((button) => {
@@ -288,4 +490,7 @@ yearButtons.forEach((button) => {
 });
 
 initializeSports();
+connectRosterActions();
+refreshRosterSelect();
 setYear(2022);
+updateSportHints();

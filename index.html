@@ -34,6 +34,29 @@
         </ul>
       </section>
 
+      <section class="panel roster-manager">
+        <div class="panel-header">
+          <h2>Roster Manager</h2>
+          <p class="helper">Save multiple rosters and compare them against the selected year.</p>
+        </div>
+        <div class="roster-controls">
+          <label class="roster-field">
+            Roster name
+            <input id="roster-name" type="text" placeholder="e.g. Snow Day Squad" />
+          </label>
+          <label class="roster-field">
+            Saved rosters
+            <select id="roster-select"></select>
+          </label>
+          <div class="roster-buttons">
+            <button type="button" id="save-roster">Save roster</button>
+            <button type="button" id="new-roster" class="secondary">New roster</button>
+            <button type="button" id="delete-roster" class="danger">Delete roster</button>
+          </div>
+        </div>
+        <p class="status" id="roster-status" aria-live="polite"></p>
+      </section>
+
       <section class="panel">
         <div class="panel-header">
           <h2>Your 16-Sport Roster</h2>
@@ -75,6 +98,22 @@
             </thead>
             <tbody id="results-body"></tbody>
           </table>
+        </div>
+        <div class="leaderboard">
+          <h3>Saved Roster Leaderboard</h3>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Roster</th>
+                  <th>Completed</th>
+                  <th>Golds</th>
+                  <th>Points</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboard-body"></tbody>
+            </table>
+          </div>
         </div>
       </section>
     </main>

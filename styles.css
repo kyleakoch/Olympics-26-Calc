@@ -105,6 +105,60 @@ main {
   color: #5b6c87;
 }
 
+.roster-manager .roster-controls {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  align-items: end;
+}
+
+.roster-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: #27324a;
+}
+
+.roster-field input,
+.roster-field select {
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid #ccd5e0;
+  font-size: 0.95rem;
+}
+
+.roster-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.roster-buttons button {
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  background: #1b3a73;
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.roster-buttons .secondary {
+  background: #e2e8f0;
+  color: #1b3a73;
+}
+
+.roster-buttons .danger {
+  background: #fce8e8;
+  color: #b42318;
+}
+
+.status {
+  margin: 1rem 0 0;
+  color: #5b6c87;
+}
+
 .sports-grid {
   display: grid;
   gap: 1rem;
@@ -139,6 +193,12 @@ main {
   color: #5b6c87;
   display: flex;
   justify-content: space-between;
+}
+
+.sport-hint {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #5b6c87;
 }
 
 .results .summary {
@@ -183,6 +243,14 @@ main {
   font-weight: 600;
 }
 
+.leaderboard {
+  margin-top: 2rem;
+}
+
+.leaderboard h3 {
+  margin: 0 0 1rem;
+}
+
 footer {
   padding: 2rem clamp(1.5rem, 4vw, 4rem) 0;
   text-align: center;
@@ -202,5 +270,9 @@ footer {
   .year-button {
     flex: 1;
     text-align: center;
+  }
+
+  .roster-buttons {
+    flex-direction: column;
   }
 }
