@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Winter Olympics Fantasy Results Viewer</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Winter Olympics Fantasy Pool</p>
+        <h1>Winter Olympics Results Viewer</h1>
+        <p class="subhead">
+          Pick one country for each sport, then see how your roster scores based on medals in that year.
+          Toggle to 2026 to be ready for the upcoming games.
+        </p>
+      </div>
+      <div class="year-switch" role="group" aria-label="Select data year">
+        <button type="button" class="year-button" data-year="2022">2022 Results</button>
+        <button type="button" class="year-button" data-year="2026">2026 Preview</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="rules">
+        <h2>Pool Rules (Quick View)</h2>
+        <ul>
+          <li>Assign <strong>1 country</strong> to each of the 16 Winter Olympic sports.</li>
+          <li>Each country can be used only once.</li>
+          <li>Scoring per sport: <strong>3 points per gold</strong>, <strong>2 per silver</strong>, <strong>1 per bronze</strong>.</li>
+          <li>Russia and Belarus compete under <strong>Individual Neutral Athletes (INA)</strong>.</li>
+          <li>Tiebreaker: most gold medals.</li>
+        </ul>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Your 16-Sport Roster</h2>
+          <p class="helper">Select a country for each sport. Use each country once.</p>
+        </div>
+        <div id="sports-grid" class="sports-grid" aria-live="polite"></div>
+      </section>
+
+      <section class="panel results">
+        <div class="panel-header">
+          <h2>Scoring Summary</h2>
+          <p class="helper" id="results-helper">2022 results are loaded.</p>
+        </div>
+        <div class="summary">
+          <div>
+            <p class="label">Total Points</p>
+            <p class="value" id="total-points">0</p>
+          </div>
+          <div>
+            <p class="label">Total Golds (Tiebreaker)</p>
+            <p class="value" id="total-golds">0</p>
+          </div>
+          <div>
+            <p class="label">Sports Completed</p>
+            <p class="value" id="sports-complete">0 / 16</p>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Sport</th>
+                <th>Country</th>
+                <th>Gold</th>
+                <th>Silver</th>
+                <th>Bronze</th>
+                <th>Points</th>
+              </tr>
+            </thead>
+            <tbody id="results-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>
+        Ready for 2026? Toggle the year switch to preview upcoming games. Points will populate as results
+        come in.
+      </p>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>

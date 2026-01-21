@@ -1,0 +1,206 @@
+:root {
+  color-scheme: light;
+  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+  background: #f5f7fb;
+  color: #162036;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0 0 3rem;
+}
+
+.hero {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+  padding: 2.5rem clamp(1.5rem, 4vw, 4rem);
+  background: linear-gradient(120deg, #1b3a73, #3366b5);
+  color: #f8f9ff;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.75rem;
+  margin: 0 0 0.5rem;
+}
+
+.hero h1 {
+  font-size: clamp(2rem, 3vw, 3rem);
+  margin: 0 0 0.5rem;
+}
+
+.subhead {
+  margin: 0;
+  max-width: 40rem;
+  line-height: 1.6;
+}
+
+.year-switch {
+  display: flex;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  padding: 0.35rem;
+  gap: 0.35rem;
+}
+
+.year-button {
+  border: none;
+  padding: 0.65rem 1.4rem;
+  border-radius: 999px;
+  background: transparent;
+  color: #f8f9ff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.year-button.active {
+  background: #f8f9ff;
+  color: #1b3a73;
+}
+
+main {
+  padding: 2.5rem clamp(1.5rem, 4vw, 4rem);
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.rules {
+  background: #ffffff;
+  border-radius: 1.25rem;
+  padding: 1.5rem 2rem;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+
+.rules ul {
+  margin: 0.75rem 0 0;
+  padding-left: 1.2rem;
+  line-height: 1.7;
+}
+
+.panel {
+  background: #ffffff;
+  border-radius: 1.25rem;
+  padding: 1.5rem 2rem 2rem;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+
+.panel-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.helper {
+  margin: 0;
+  color: #5b6c87;
+}
+
+.sports-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.sport-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  background: #f9fbff;
+}
+
+.sport-card h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.sport-card select {
+  width: 100%;
+  padding: 0.6rem;
+  border-radius: 0.75rem;
+  border: 1px solid #ccd5e0;
+  font-size: 0.95rem;
+}
+
+.sport-meta {
+  font-size: 0.85rem;
+  color: #5b6c87;
+  display: flex;
+  justify-content: space-between;
+}
+
+.results .summary {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  margin-bottom: 1.5rem;
+}
+
+.summary .label {
+  margin: 0;
+  color: #5b6c87;
+  font-size: 0.9rem;
+}
+
+.summary .value {
+  margin: 0.25rem 0 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.table-wrapper table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.table-wrapper th,
+.table-wrapper td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.table-wrapper th {
+  background: #f1f5ff;
+  color: #27324a;
+  font-weight: 600;
+}
+
+footer {
+  padding: 2rem clamp(1.5rem, 4vw, 4rem) 0;
+  text-align: center;
+  color: #5b6c87;
+}
+
+@media (max-width: 700px) {
+  .hero {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .year-switch {
+    width: 100%;
+  }
+
+  .year-button {
+    flex: 1;
+    text-align: center;
+  }
+}
